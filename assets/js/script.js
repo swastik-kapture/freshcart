@@ -1,3 +1,7 @@
+// BASE URL for backend
+API_BASE_URL = "https://hackathon-otjk.onrender.com";
+CLIENT_ID = 12;
+
 // if there is no cart set cart
 if (localStorage.getItem("cartItems") === null) {
   localStorage.setItem("cartItems", JSON.stringify({}));
@@ -156,9 +160,6 @@ function get_add_event_item(event) {
   document.getElementById("toggleCart").click();
 }
 
-// rerender cart on page load
-rerender_cart();
-
 // add events to all items
 document.querySelectorAll(".add-btn").forEach((btn) => {
   btn.addEventListener("click", (evt) => get_add_event_item(evt));
@@ -168,88 +169,101 @@ function signup_api_call() {
   // Get the input values
   var firstName = document.querySelector('[placeholder="First name"]').value;
   var lastName = document.querySelector('[placeholder="Last name"]').value;
-  var email = document.getElementById('inputEmail').value;
-  var phone = document.getElementById('inputPhone').value;
-  var password = document.getElementById('fakePassword').value;
+  var email = document.getElementById("inputEmail").value;
+  var phone = document.getElementById("inputPhone").value;
+  var password = document.getElementById("fakePassword").value;
+
+  if (!firstName || !lastName || !email || !phone || !password) {
+    console.log("Debug: Should not register!");
+    return false;
+  }
 
   // Prepare the request body
   var requestBody = {
-      firstName: firstName,
-      lastName: lastName,
-      email: email,
-      phone: phone,
-      password: password
+    clientId: CLIENT_ID,
+    name: `${firstName} ${lastName}`,
+    email: email,
+    phone: phone,
+    address: "",
+    password: password,
   };
 
+  console.log("Debug: Request for sign up", requestBody);
+
   // Make the API call
-  fetch('https://api.example.com/signup', {
-      method: 'POST',
-      headers: {
-          'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(requestBody)
+  fetch(`${API_BASE_URL}/cc/save`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(requestBody),
   })
-  .then(response => response.json())
-  .then(data => {
+    .then((response) => {
+      console.log("Debug: Signup Response Received:", response);
       // Handle the API response here
-      if (data.success) {
+      if (response.status === 200) {
         // If sign-in is successful, redirect to another page
-        localStorage.setItem('email',email);
-        window.location.href = 'http://127.0.0.1:5501/index.html';
+        localStorage.setItem("email", email);
+        console.log("Debug: Localstorage set for email", email);
+        window.location.href = "/index.html";
       } else {
-          console.error('Sign-in failed:', data.error);
+        console.log("API Error Occured:", response.json());
       }
-      console.log(data);
-  })
-  .catch(error => {
-      console.error('Error:', error);
-  });
+    })
+    .catch((error) => {
+      console.error("Error:", error);
+    });
 }
+
 function signInApiCall() {
   // Get the input values
-  var email = document.getElementById('inputEmail4').value;
-  var password = document.getElementById('fakePassword').value;
+  var email = document.getElementById("inputEmail4").value;
+  var password = document.getElementById("fakePassword").value;
+
+  if (!email || !password) {
+    console.log("Debug: Should not start signin!");
+    return false;
+  }
 
   // Prepare the request body
   var requestBody = {
-      email: email,
-      password: password
+    email: email,
+    password: password,
   };
 
   // Make the API call
-  fetch('https://api.example.com/signin', {
-      method: 'POST',
-      headers: {
-          'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(requestBody)
+  fetch(`${API_BASE_URL}/signin`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(requestBody),
   })
-  .then(response => response.json())
-  .then(data => {
-    if (data.success) {
-      // If sign-in is successful, redirect to another page
-      localStorage.setItem('email',email);
-      window.location.href = '/index.html';
-
-    } else {
-        console.error('Sign-in failed:', data.error);
-    }
-      console.log(data);
-  })
-  .catch(error => {
-      console.error('Error:', error);
-  });
+    .then((response) => {
+      // log
+      console.log("Debug: Signin Response Received:", response);
+      // Handle the API response here
+      if (response.status === 200) {
+        // If sign-in is successful, redirect to another page
+        localStorage.setItem("email", email);
+        console.log("Debug: Localstorage set for email", email);
+        window.location.href = "/index.html";
+      } else {
+        console.log("Signin API Error Occured:", response.json());
+      }
+    })
+    .catch((error) => {
+      console.error("Error:", error);
+    });
 }
 function signOut() {
-  localStorage.clear();
-  window.location.href = '/pages/signup.html';
+  localStorage.removeItem("email");
+  window.location.href = "/pages/signup.html";
 }
 function goToConfirmationPage() {
-  window.location.href = '/pages/confirmation.html';
+  window.location.href = "/pages/confirmation.html";
 }
 function goToHomePage() {
   localStorage.setItem("cartItems", JSON.stringify({}));
-  window.location.href = '/index.html';
+  window.location.href = "/index.html";
 }
-
-

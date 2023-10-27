@@ -26,15 +26,6 @@
 
 <!-- Theme CSS -->
 <link rel="stylesheet" href="assets/css/theme.min.css">
-  <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-M8S4MT3EYG"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-M8S4MT3EYG');
-</script>
 
 </head>
 
@@ -1975,6 +1966,10 @@
   <script src="assets/js/vendors/zoom.js"></script>
 <script src="assets/js/vendors/increment-value.js"></script>
 <script src="assets/js/script.js"></script>
+<script>
+  // re-render cart
+  rerender_cart();
+</script>
 <!-- <script>
   document.addEventListener('DOMContentLoaded', function() {
       var storedEmail = localStorage.getItem('email');
