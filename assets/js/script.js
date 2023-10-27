@@ -163,3 +163,93 @@ rerender_cart();
 document.querySelectorAll(".add-btn").forEach((btn) => {
   btn.addEventListener("click", (evt) => get_add_event_item(evt));
 });
+
+function signup_api_call() {
+  // Get the input values
+  var firstName = document.querySelector('[placeholder="First name"]').value;
+  var lastName = document.querySelector('[placeholder="Last name"]').value;
+  var email = document.getElementById('inputEmail').value;
+  var phone = document.getElementById('inputPhone').value;
+  var password = document.getElementById('fakePassword').value;
+
+  // Prepare the request body
+  var requestBody = {
+      firstName: firstName,
+      lastName: lastName,
+      email: email,
+      phone: phone,
+      password: password
+  };
+
+  // Make the API call
+  fetch('https://api.example.com/signup', {
+      method: 'POST',
+      headers: {
+          'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(requestBody)
+  })
+  .then(response => response.json())
+  .then(data => {
+      // Handle the API response here
+      if (data.success) {
+        // If sign-in is successful, redirect to another page
+        localStorage.setItem('email',email);
+        window.location.href = 'http://127.0.0.1:5501/index.html';
+      } else {
+          console.error('Sign-in failed:', data.error);
+      }
+      console.log(data);
+  })
+  .catch(error => {
+      console.error('Error:', error);
+  });
+}
+function signInApiCall() {
+  // Get the input values
+  var email = document.getElementById('inputEmail4').value;
+  var password = document.getElementById('fakePassword').value;
+
+  // Prepare the request body
+  var requestBody = {
+      email: email,
+      password: password
+  };
+
+  // Make the API call
+  fetch('https://api.example.com/signin', {
+      method: 'POST',
+      headers: {
+          'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(requestBody)
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      // If sign-in is successful, redirect to another page
+      localStorage.setItem('email',email);
+      window.location.href = '/index.html';
+
+    } else {
+        console.error('Sign-in failed:', data.error);
+    }
+      console.log(data);
+  })
+  .catch(error => {
+      console.error('Error:', error);
+  });
+}
+function signOut() {
+  localStorage.clear();
+  window.location.href = '/pages/signup.html';
+}
+function goToConfirmationPage() {
+  window.location.href = '/pages/confirmation.html';
+}
+function goToHomePage() {
+  localStorage.setItem("cartItems", JSON.stringify({}));
+  window.location.href = '/index.html';
+}
+
+

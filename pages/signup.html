@@ -82,7 +82,11 @@
               </div>
               <div class="col-12">
 
-                <!-- input --><input type="email" class="form-control" id="inputEmail4" placeholder="Email" required>
+                <!-- input --><input type="email" class="form-control" id="inputEmail" placeholder="Email" required>
+              </div>
+              <div class="col-12">
+
+                <!-- input --><input type="tel" class="form-control" id="inputPhone" placeholder="Phone"  pattern="[0-9]+" required>
               </div>
               <div class="col-12">
 
@@ -92,7 +96,7 @@
                 </div>
               </div>
               <!-- btn -->
-              <div class="col-12 d-grid"> <button type="submit" class="btn btn-primary">Register</button>
+              <div class="col-12 d-grid"> <button type="submit" class="btn btn-primary" onclick="signup_api_call()">Register</button>
               </div>
 
               <!-- text -->
@@ -279,7 +283,7 @@
 <!-- Theme JS -->
 <script src="../assets/js/theme.min.js"></script>
   <script src="../assets/js/vendors/password.js"></script>
-
+<script src="../assets/js/script.js"></script>
 
 
 
