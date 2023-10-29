@@ -632,7 +632,7 @@
       <!-- btn -->
       <div class="d-flex justify-content-between mt-4">
         <a href="#!" class="btn btn-dark">Update Cart</a>
-        <a href="#!" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#checkoutModal">Check Out</a>
+        <a href="#!" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#checkoutModal" onclick="checkoutAPIEvent()">Check Out</a>
       </div>
 
     </div>
@@ -718,8 +718,8 @@
         </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-        <button type="button" class="btn btn-primary" onclick="goToConfirmationPage()">Confirm Payment</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="purchaseCancelAPIEvent()">Cancel</button>
+        <button type="button" class="btn btn-primary" onclick="purchaseCompleteAPIEvent()">Confirm Payment</button>
       </div>
     </div>
   </div>
@@ -1966,10 +1966,7 @@
   <script src="assets/js/vendors/zoom.js"></script>
 <script src="assets/js/vendors/increment-value.js"></script>
 <script src="assets/js/script.js"></script>
-<script>
-  // re-render cart
-  rerender_cart();
-</script>
+<script src="assets/js/index.js"></script>
 <!-- <script>
   document.addEventListener('DOMContentLoaded', function() {
       var storedEmail = localStorage.getItem('email');

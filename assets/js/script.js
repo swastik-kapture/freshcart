@@ -1,5 +1,6 @@
 // BASE URL for backend
-API_BASE_URL = "https://hackathon-otjk.onrender.com";
+// API_BASE_URL = "https://hackathon-otjk.onrender.com";
+API_BASE_URL = "http://127.0.0.1:8081";
 CLIENT_ID = 12;
 
 // if there is no cart set cart
@@ -107,6 +108,8 @@ function add_to_local_cart(prd_name, img_url, prd_qty, prd_price) {
   } else {
     cartItems[prd_name] = cartItem;
   }
+  // add to cart API event
+  addToCartAPIEvent(cartItems[prd_name]);
   // set localstorage
   localStorage.setItem("cartItems", JSON.stringify(cartItems));
   // rerender cart
@@ -139,6 +142,8 @@ function delete_from_local_cart(prd_name) {
   } else {
     console.log("Illegal attempt to remove from cart!");
   }
+  // make API call to events
+  removeFromCartAPIEvent();
   // set cart in localstorage
   localStorage.setItem("cartItems", JSON.stringify(cartItems));
   // rerender cart
@@ -199,15 +204,24 @@ function signup_api_call() {
     body: JSON.stringify(requestBody),
   })
     .then((response) => {
-      console.log("Debug: Signup Response Received:", response);
+      return response.json();
+    })
+    .then((data) => {
+      // log
+      console.log("Debug: Signup Response Received:", data);
       // Handle the API response here
-      if (response.status === 200) {
+      if (data.success) {
+        // localstorage store user
+        userAccount = {
+          id: data.data.id,
+          email: data.data.email,
+        };
         // If sign-in is successful, redirect to another page
-        localStorage.setItem("email", email);
-        console.log("Debug: Localstorage set for email", email);
+        localStorage.setItem("userAccount", JSON.stringify(userAccount));
+        console.log("Debug: Localstorage set for email", data.email);
         window.location.href = "/index.html";
       } else {
-        console.log("API Error Occured:", response.json());
+        console.log("API Error Occured:", data);
       }
     })
     .catch((error) => {
@@ -225,14 +239,50 @@ function signInApiCall() {
     return false;
   }
 
-  // Prepare the request body
-  var requestBody = {
-    email: email,
-    password: password,
-  };
-
   // Make the API call
-  fetch(`${API_BASE_URL}/signin`, {
+  fetch(`${API_BASE_URL}/cc/validate?email=${email}&password=${password}`, {
+    method: "GET",
+  })
+    .then((response) => {
+      return response.json();
+    })
+    .then((data) => {
+      // log
+      console.log("Debug: Signin Response Received:", data);
+      // Handle the API response here
+      if (data.success) {
+        // localstorage store user
+        userAccount = {
+          id: data.data.id,
+          email: data.data.email,
+        };
+        // If sign-in is successful, redirect to another page
+        localStorage.setItem("userAccount", JSON.stringify(userAccount));
+        console.log("Debug: Localstorage set for email", data.email);
+        window.location.href = "/index.html";
+      } else {
+        console.log("Signin API Error Occured:", data);
+      }
+    })
+    .catch((error) => {
+      console.error("Error:", error);
+    });
+}
+
+function addToCartAPIEvent(cartItem) {
+  // get customer ID
+  userAccount = JSON.parse(localStorage.getItem("userAccount"));
+  // get current cart
+  cartItems = localStorage.getItem("cartItems");
+  // form request body
+  requestBody = {
+    "eventName": "add", 
+    "metaData": cartItems, 
+    "clientId": CLIENT_ID,
+    "customerId": userAccount.id
+  }
+  // Make the API call
+  fetch(`${API_BASE_URL}/e/save`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -240,29 +290,181 @@ function signInApiCall() {
     body: JSON.stringify(requestBody),
   })
     .then((response) => {
-      // log
-      console.log("Debug: Signin Response Received:", response);
+      return response.json();
+    })
+    .then((data) => {
       // Handle the API response here
-      if (response.status === 200) {
+      if (data.success) {
         // If sign-in is successful, redirect to another page
-        localStorage.setItem("email", email);
-        console.log("Debug: Localstorage set for email", email);
-        window.location.href = "/index.html";
+        console.log("Debug: Cart ADD Event Response Received:", data);
       } else {
-        console.log("Signin API Error Occured:", response.json());
+        console.log("Signin API Error Occured:", data);
       }
     })
     .catch((error) => {
       console.error("Error:", error);
     });
 }
+
+function removeFromCartAPIEvent() {
+  // get customer ID
+  userAccount = JSON.parse(localStorage.getItem("userAccount"));
+  // get current cart
+  cartItems = localStorage.getItem("cartItems");
+  // form request body
+  requestBody = {
+    "eventName": "remove", 
+    "metaData": cartItems,
+    "clientId": CLIENT_ID,
+    "customerId": userAccount.id
+  }
+  // Make the API call
+  fetch(`${API_BASE_URL}/e/save`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(requestBody),
+  })
+    .then((response) => {
+      return response.json();
+    })
+    .then((data) => {
+      // Handle the API response here
+      if (data.success) {
+        // If sign-in is successful, redirect to another page
+        console.log("Debug: Cart Remove Event Response Received:", data);
+      } else {
+        console.log("Signin API Error Occured:", data);
+      }
+    })
+    .catch((error) => {
+      console.error("Error:", error);
+    });
+}
+
+function checkoutAPIEvent() {
+  // get customer ID
+  userAccount = JSON.parse(localStorage.getItem("userAccount"));
+  // get current cart
+  cartItems = localStorage.getItem("cartItems");
+  // form request body
+  requestBody = {
+    "eventName": "checkout", 
+    "metaData": cartItems,
+    "clientId": CLIENT_ID,
+    "customerId": userAccount.id
+  }
+  // Make the API call
+  fetch(`${API_BASE_URL}/e/save`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(requestBody),
+  })
+    .then((response) => {
+      return response.json();
+    })
+    .then((data) => {
+      // Handle the API response here
+      if (data.success) {
+        // If sign-in is successful, redirect to another page
+        console.log("Debug: Cart Checkout Event Response Received:", data);
+      } else {
+        console.log("Signin API Error Occured:", data);
+      }
+    })
+    .catch((error) => {
+      console.error("Error:", error);
+    });
+}
+
+function purchaseCompleteAPIEvent() {
+  // get customer ID
+  userAccount = JSON.parse(localStorage.getItem("userAccount"));
+  // get current cart
+  cartItems = localStorage.getItem("cartItems");
+  // form request body
+  requestBody = {
+    "eventName": "purchase", 
+    "metaData": cartItems,
+    "clientId": CLIENT_ID,
+    "customerId": userAccount.id
+  }
+  // Make the API call
+  fetch(`${API_BASE_URL}/e/save`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(requestBody),
+  })
+    .then((response) => {
+      return response.json();
+    })
+    .then((data) => {
+      // Handle the API response here
+      if (data.success) {
+        // If sign-in is successful, redirect to another page
+        console.log("Debug: Cart Purchase Event Response Received:", data);
+      } else {
+        console.log("Signin API Error Occured:", data);
+      }
+      // go to confirmation page
+      goToConfirmationPage();
+    })
+    .catch((error) => {
+      console.error("Error:", error);
+    });
+}
+
+function purchaseCancelAPIEvent() {
+  // get customer ID
+  userAccount = JSON.parse(localStorage.getItem("userAccount"));
+  // get current cart
+  cartItems = localStorage.getItem("cartItems");
+  // form request body
+  requestBody = {
+    "eventName": "cancel", 
+    "metaData": cartItems,
+    "clientId": CLIENT_ID,
+    "customerId": userAccount.id
+  }
+  // Make the API call
+  fetch(`${API_BASE_URL}/e/save`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(requestBody),
+  })
+    .then((response) => {
+      return response.json();
+    })
+    .then((data) => {
+      // Handle the API response here
+      if (data.success) {
+        // If sign-in is successful, redirect to another page
+        console.log("Debug: Cart Cancel Event Response Received:", data);
+      } else {
+        console.log("Signin API Error Occured:", data);
+      }
+    })
+    .catch((error) => {
+      console.error("Error:", error);
+    });
+}
+
 function signOut() {
-  localStorage.removeItem("email");
+  localStorage.removeItem("userAccount");
   window.location.href = "/pages/signup.html";
 }
+
 function goToConfirmationPage() {
   window.location.href = "/pages/confirmation.html";
 }
+
 function goToHomePage() {
   localStorage.setItem("cartItems", JSON.stringify({}));
   window.location.href = "/index.html";
